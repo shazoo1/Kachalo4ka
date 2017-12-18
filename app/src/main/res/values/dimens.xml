@@ -1,3 +1,5 @@
 <resources>
-    <dimen type="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">20dp</dimen>
+    <dimen name="popupTextMargin">15dp</dimen>
+    <dimen name="popupInputMargin">10dp</dimen>
 </resources>

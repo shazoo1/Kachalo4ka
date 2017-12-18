@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvDayNumber"
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
@@ -14,7 +14,7 @@
         android:layout_marginLeft="5dp">
     </TextView>
     <TextView
-        android:id="@+id/tvDayType"
+        android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""

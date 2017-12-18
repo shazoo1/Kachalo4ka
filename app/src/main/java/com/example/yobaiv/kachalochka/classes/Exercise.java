@@ -12,10 +12,21 @@ import java.util.ListIterator;
  * Created by YOBA IV on 19.10.2017.
  */
 
-public class Excercise {
+public class Exercise {
 
     private String name;
-    private List<Set> sets = new ArrayList<Set>();
+
+    public int getSetsCount() {
+        return setsCount;
+    }
+
+    public void setSetsCount(int setsCount) {
+        this.setsCount = setsCount;
+    }
+
+    private int setsCount;
+
+    private long id;
 
     public void setName(String name){
         this.name = name;
@@ -25,11 +36,12 @@ public class Excercise {
         return name;
     }
 
-    public void addSet(Set set){
-        sets.add(set);
+    public void setId(long id){
+        this.id = id;
     }
 
-    public void addNewSet(int repeats, float weight){
-        sets.add(new Set(repeats, weight));
+    public long getId() {
+        return id;
     }
+
 }

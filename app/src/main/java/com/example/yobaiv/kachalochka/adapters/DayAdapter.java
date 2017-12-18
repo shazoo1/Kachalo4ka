@@ -20,9 +20,9 @@ import java.util.List;
 public class DayAdapter extends BaseAdapter {
     Context context;
     LayoutInflater lInflater;
-    ArrayList<Day> objects;
+    List<Day> objects;
 
-    public DayAdapter (Context context, ArrayList<Day> days){
+    public DayAdapter (Context context, List<Day> days){
         this.context = context;
         objects = days;
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,18 +47,15 @@ public class DayAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent){
         View view = convertView;
         if (view == null){
-            view = lInflater.inflate(R.layout.day, parent, false);
+            view = lInflater.inflate(R.layout.list_item, parent, false);
         }
 
-        Day day = getDay(position);
+        Day day = (Day)getItem(position);
 
-        ((TextView) view.findViewById(R.id.tvDayNumber)).setText(day.getTitle());
-        ((TextView) view.findViewById(R.id.tvDayType)).setText(day.getType());
+        ((TextView) view.findViewById(R.id.tvTitle)).setText(day.getTitle());
+        ((TextView) view.findViewById(R.id.tvSubtitle)).setText(day.getType());
 
         return view;
     }
 
-    public Day getDay(int pos){
-        return (Day) objects.get(pos);
-    }
 }

@@ -5,24 +5,44 @@ package com.example.yobaiv.kachalochka.classes;
  */
 
 public class Set {
-    private int repeats;
+
+    private long exId;
+    private int count;
+    private int number;
     private float weight;
 
-    public Set(int repeats, float weight){
-        this.repeats = repeats;
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public long getExId() {
+        return exId;
+    }
+
+    public void setExId(long exId) {
+        this.exId = exId;
+    }
+
+    public Set(){}
+    public Set(int count, float weight){
+        this.count = count;
         this.weight = weight;
     }
 
-    public void setRepeats(int repeats){
-        this.repeats = repeats;
+    public void setCount(int count){
+        this.count = count;
     }
 
     public void setWeight(float weight){
         this.weight = weight;
     }
 
-    public int getRepeats(){
-        return  repeats;
+    public int getCount(){
+        return count;
     }
     public float getWeight(){
         return weight;

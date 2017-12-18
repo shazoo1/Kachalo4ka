@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Kachalochka</string>
+    <string name="app_name">Качалочка</string>
+    <string name="title_activity_new_day">Новый день</string>
+    <string name="title_activity_day">День</string>
+    <string name="toolbar_back">Назад</string>
+    <string name="toolbar_title">Качалочка</string>
 </resources>

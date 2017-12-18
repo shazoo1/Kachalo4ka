@@ -1,5 +1,6 @@
 package com.example.yobaiv.kachalochka.classes;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,22 +10,27 @@ import java.util.List;
  */
 
 public class Day {
-    private int number;
-    private Date date;
+    private long id;
     private String type;
-    private List<Excercise> excercises = new ArrayList<Excercise>();
+    String title;
+    private List<Exercise> exercises = new ArrayList<Exercise>();
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private Date date = new Date();
 
-    public Day(int number, String type){
-        this.number = number;
+    public Day(long id, String title, String type, long date){
+        this.id = id;
+        this.title = title;
         this.type = type;
+        this.date = new Date(date);
+        dateFormat.format(this.date);
     }
 
-    public int getNumber() {
-        return number;
+    public long getId() {
+        return id;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Date getDate() {
@@ -44,7 +50,13 @@ public class Day {
     }
 
     public String getTitle(){
-        return "День " + number;
+        return title;
     }
 
+    private void generateTitle(int number){
+        title = "День " + number + " - " + dateFormat.format(date);
+    }
+    public void setTitle(String title){
+        this.title = title;
+    }
 }
