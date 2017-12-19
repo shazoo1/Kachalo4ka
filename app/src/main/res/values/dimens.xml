@@ -2,4 +2,5 @@
     <dimen name="fab_margin">20dp</dimen>
     <dimen name="popupTextMargin">15dp</dimen>
     <dimen name="popupInputMargin">10dp</dimen>
+    <dimen name="hint_margin">3dp</dimen>
 </resources>

@@ -17,36 +17,48 @@ public class DBhelper extends SQLiteOpenHelper{
 
     private final String SELFTAG = "DBHelper";
     public DBhelper (Context context){
-        super (context, "kach", null, 5);
+        super (context, "kach", null, 6);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        db.execSQL("create table types ("
+        db.execSQL("create table type ("
                 +"id integer primary key autoincrement,"
                 +"name text not null)");
-        db.execSQL("create table exercises ("
+        db.execSQL("create table day (" +
+                "id integer primary key autoincrement," +
+                "typeid integer nut null," +
+                "date integer not null," +
+                "title text not null," +
+                "foreign key (typeid) references type(id))");
+        db.execSQL("create table exercise ("
                 +"id integer primary key autoincrement,"
                 +"name text not null)");
-        db.execSQL("create table sets ("
-                +"deid integer not null,"
-                +"number integer not null,"
-                +"weight real not null,"
-                +"count integer not null,"
-                +"foreign key (deid) references daysexercises(id),"
-                +"primary key (deid, number)"+")");
-        db.execSQL("create table days ("
-                +"id integer primary key autoincrement,"
-                +"title text not null,"
-                +"date integer not null,"
-                +"typeid integer not null,"
-                +"foreign key (typeid) references types(id))");
-        db.execSQL("create table daysexercises ("
-                +"id integer primary key autoincrement,"
-                +"dayid integer not null,"
-                +"exid integer not null,"
-                +"foreign key (dayid) references days(id),"
-                +"foreign key (exid) references exercises(id))");
+        db.execSQL("create table unit (" +
+                "id integer primary key autoincrement," +
+                "name text not null)");
+        db.execSQL("create table training (" +
+                "id integer primary key autoincrement," +
+                "dayid integer not null," +
+                "exerciseid integer not null," +
+                "foreign key (dayid) references day(id)," +
+                "foreign key (exerciseid) references(id))");
+        db.execSQL("create table meta (" +
+                "dayid integer not null," +
+                "name text not null," +
+                "value text not null," +
+                "isnumeric integer not null default 0," +
+                "primary key (dayid, name)," +
+                "foreign key (dayid) references day(id))");
+        db.execSQL("create table set (" +
+                "trainingid integer not null," +
+                "number integer not null," +
+                "value real not null," +
+                "count integer not null," +
+                "unitid integer not null," +
+                "primary key (trainingid, number)," +
+                "foreign key (trainingid) references training(id)," +
+                "foreign key (unitid) references unit(id))");
     }
 
     @Override
@@ -72,6 +84,14 @@ public class DBhelper extends SQLiteOpenHelper{
             db.execSQL("alter table days add column date integer not null default 0;");
         }
         if (oldVersion < 5){
+            db.execSQL("drop table days");
+            db.execSQL("drop table exercises");
+            db.execSQL("drop table types");
+            db.execSQL("drop table sets");
+            db.execSQL("drop table daysexercises");
+            onCreate(db);
+        }
+        if (oldVersion<6){
             db.execSQL("drop table days");
             db.execSQL("drop table exercises");
             db.execSQL("drop table types");

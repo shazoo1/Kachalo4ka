@@ -2,6 +2,8 @@ package com.example.yobaiv.kachalochka.classes;
 
 import android.support.annotation.NonNull;
 
+import com.example.yobaiv.kachalochka.interfaces.IEntity;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,19 +14,9 @@ import java.util.ListIterator;
  * Created by YOBA IV on 19.10.2017.
  */
 
-public class Exercise {
+public class Exercise implements IEntity{
 
     private String name;
-
-    public int getSetsCount() {
-        return setsCount;
-    }
-
-    public void setSetsCount(int setsCount) {
-        this.setsCount = setsCount;
-    }
-
-    private int setsCount;
 
     private long id;
 

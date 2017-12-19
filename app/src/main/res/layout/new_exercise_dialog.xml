@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:text="Новое упражнение"
         />
-    <EditText
+    <AutoCompleteTextView
         android:layout_marginStart="@dimen/popupInputMargin"
         android:layout_marginEnd="@dimen/popupInputMargin"
         android:id="@+id/etName"

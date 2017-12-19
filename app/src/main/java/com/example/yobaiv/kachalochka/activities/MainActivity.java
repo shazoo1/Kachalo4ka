@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        clearTables();
+        //clearTables();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_menu);
 

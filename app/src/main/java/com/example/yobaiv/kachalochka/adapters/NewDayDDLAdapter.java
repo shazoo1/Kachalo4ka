@@ -33,7 +33,7 @@ public class NewDayDDLAdapter extends ArrayAdapter{
 
     public NewDayDDLAdapter(Context context, int resource, List<DayType> types){
         super (context, resource, types);
-        Context context1 = context;
+        //Context context1 = context;
         objects = types;
         all = clone(objects);
         suggestions = new ArrayList<>();

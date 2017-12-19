@@ -1,5 +1,7 @@
 package com.example.yobaiv.kachalochka.classes;
 
+import com.example.yobaiv.kachalochka.interfaces.IEntity;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,21 +11,30 @@ import java.util.List;
  * Created by YOBA IV on 19.10.2017.
  */
 
-public class Day {
+public class Day implements IEntity{
     private long id;
-    private String type;
-    String title;
-    private List<Exercise> exercises = new ArrayList<Exercise>();
+
+    public long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(long typeId) {
+        this.typeId = typeId;
+    }
+
+    private long typeId;
+    private String title;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private Date date = new Date();
 
     public Day(long id, String title, String type, long date){
         this.id = id;
         this.title = title;
-        this.type = type;
         this.date = new Date(date);
         dateFormat.format(this.date);
     }
+
+    public Day(){}
 
     public long getId() {
         return id;
@@ -39,14 +50,6 @@ public class Day {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getTitle(){

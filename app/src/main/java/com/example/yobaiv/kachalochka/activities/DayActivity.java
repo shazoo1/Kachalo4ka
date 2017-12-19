@@ -14,9 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.yobaiv.kachalochka.adapters.NewExerciseDDLAdapter;
 import com.example.yobaiv.kachalochka.constants.ACode;
 import com.example.yobaiv.kachalochka.R;
 import com.example.yobaiv.kachalochka.adapters.ExerciseAdapter;
@@ -33,7 +35,7 @@ public class DayActivity extends AppCompatActivity {
     FloatingActionButton fabAdd;
     private long dayid = -1;
     private String dayTitle = "";
-    ExerciseAdapter adapter;
+    ExerciseAdapter exerciseAdapter;
 
     private ArrayList<Exercise> exercises = new ArrayList<>();
     @Override
@@ -45,7 +47,9 @@ public class DayActivity extends AppCompatActivity {
         dayid = getIntent().getLongExtra("list_item", -1);
         dayTitle = getIntent().getStringExtra("title");
 
-        adapter = new ExerciseAdapter(this, exercises);
+
+
+        exerciseAdapter = new ExerciseAdapter(this, exercises);
         Toolbar toolbar = (Toolbar)(findViewById(R.id.toolbar));
         setSupportActionBar(toolbar);
         Log.d(SELFTAG+".onCreate", dayTitle);
@@ -54,7 +58,7 @@ public class DayActivity extends AppCompatActivity {
         Log.d(SELFTAG, "Got dayId from intent.");
         getExercises(dayid);
         ListView lvEx = (ListView) findViewById(R.id.lvMain);
-        lvEx.setAdapter(adapter);
+        lvEx.setAdapter(exerciseAdapter);
         Log.d(SELFTAG, "Adapter set");
 
         fabAdd = (FloatingActionButton) findViewById(R.id.fabAdd);
@@ -109,7 +113,7 @@ public class DayActivity extends AppCompatActivity {
         else{
             Log.d(SELFTAG, "No entries in EXERCISES");
         }
-        adapter.notifyDataSetChanged();
+        exerciseAdapter.notifyDataSetChanged();
         db.close();
     }
 
@@ -120,7 +124,9 @@ public class DayActivity extends AppCompatActivity {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
         mBuilder.setView(exView);
 
-        final EditText exerciseName = ((EditText) exView.findViewById(R.id.etName));
+        NewExerciseDDLAdapter exerciseDDLAdapter = new NewExerciseDDLAdapter(this, R.layout.ddlist_item ,getAllExercises());
+        final AutoCompleteTextView exerciseName = ((AutoCompleteTextView) exView.findViewById(R.id.etName));
+        exerciseName.setAdapter(exerciseDDLAdapter);
 
         mBuilder
                 .setCancelable(true)
@@ -130,7 +136,7 @@ public class DayActivity extends AppCompatActivity {
                         final String mName = exerciseName.getText().toString();
                         addExercise(mName);
                         getExercises(dayid);
-                        adapter.notifyDataSetChanged();
+                        exerciseAdapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -142,6 +148,7 @@ public class DayActivity extends AppCompatActivity {
         AlertDialog alertDialog = mBuilder.create();
         alertDialog.show();
     }
+
     private void addExercise(String exName){
         DBhelper helper = new DBhelper(this);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -157,7 +164,7 @@ public class DayActivity extends AppCompatActivity {
 
         Log.d(SELFTAG + "." + SQLTAG, "Added exercise "+exName+", id="+id+" for list_item "+dayid);
         getExercises(dayid);
-        adapter.notifyDataSetChanged();
+        exerciseAdapter.notifyDataSetChanged();
     }
 
     private void viewExercise(Exercise ex){
@@ -191,5 +198,22 @@ public class DayActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private ArrayList<Exercise> getAllExercises(){
+        ArrayList<Exercise> result = new ArrayList<>();
+        DBhelper helper = new DBhelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String[] cols = {"id", "name"};
+        Cursor c = db.query("exercises", cols, null, null, null, null, null);
+        if (c.moveToFirst()){
+            do{
+                Exercise exercise = new Exercise();
+                exercise.setId(c.getLong(c.getColumnIndex("id")));
+                exercise.setName(c.getString(c.getColumnIndex("name")));
+                result.add(exercise);
+            } while (c.moveToNext());
+        }
+        return result;
     }
 }

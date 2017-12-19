@@ -32,19 +32,17 @@ import static com.example.yobaiv.kachalochka.activities.MainActivity.SQLTAG;
 public class NewDayActivity extends AppCompatActivity {
     String SELFTAG = "NewDayActivity";
     int number;
-    List<DayType> types = new ArrayList<>();
     ArrayAdapter<String> acadapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        types = getTypes();
-        List<String> typeNames = getTypesNames(types);
+        List<String> typeNames = getTypesNames(getTypes());
 
         setContentView(R.layout.two_field_bot_ac);
         AutoCompleteTextView acView = (AutoCompleteTextView)(findViewById(R.id.acSecond));
 
-        acadapter = new NewDayDDLAdapter(this, R.layout.ddlist_item, types);
+        acadapter = new NewDayDDLAdapter(this, R.layout.ddlist_item, getTypes());
 
         acView.setAdapter(acadapter);
 

@@ -1,10 +1,12 @@
 package com.example.yobaiv.kachalochka.classes;
 
+import com.example.yobaiv.kachalochka.interfaces.IEntity;
+
 /**
  * Created by YOBA IV on 19.10.2017.
  */
 
-public class Set {
+public class Set implements IEntity{
 
     private long exId;
     private int count;
