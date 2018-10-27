@@ -1,11 +1,10 @@
-package com.example.yobaiv.kachalochka.classes;
+package com.example.yobaiv.kachalochka.classes.helpers;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import static com.example.yobaiv.kachalochka.activities.MainActivity.SQLTAG;
 
@@ -17,20 +16,16 @@ public class DBhelper extends SQLiteOpenHelper{
 
     private final String SELFTAG = "DBHelper";
     public DBhelper (Context context){
-        super (context, "kach", null, 6);
+        super (context, "kach", null, 10);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db){
+        db.execSQL("PRAGMA foreign_keys=ON;");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        db.execSQL("create table type ("
-                +"id integer primary key autoincrement,"
-                +"name text not null)");
-        db.execSQL("create table day (" +
-                "id integer primary key autoincrement," +
-                "typeid integer nut null," +
-                "date integer not null," +
-                "title text not null," +
-                "foreign key (typeid) references type(id))");
         db.execSQL("create table exercise ("
                 +"id integer primary key autoincrement,"
                 +"name text not null)");
@@ -39,26 +34,31 @@ public class DBhelper extends SQLiteOpenHelper{
                 "name text not null)");
         db.execSQL("create table training (" +
                 "id integer primary key autoincrement," +
-                "dayid integer not null," +
-                "exerciseid integer not null," +
-                "foreign key (dayid) references day(id)," +
-                "foreign key (exerciseid) references(id))");
+                "date integer not null," +
+                "title text not null," +
+                "comment text)");
         db.execSQL("create table meta (" +
-                "dayid integer not null," +
+                "id integer primary key autoincrement, " +
                 "name text not null," +
+                "trainingid integer not null," +
                 "value text not null," +
                 "isnumeric integer not null default 0," +
-                "primary key (dayid, name)," +
-                "foreign key (dayid) references day(id))");
-        db.execSQL("create table set (" +
+                "foreign key (trainingid) references training(id) on delete cascade)");
+        db.execSQL("create table trainingexercise (" +
+                "id integer primary key autoincrement," +
+                "exerciseid integer not null," +
                 "trainingid integer not null," +
+                "foreign key (exerciseid) references exercise(id) on delete cascade," +
+                "foreign key (trainingid) references training(id) on delete cascade)");
+        db.execSQL("create table settable (" +
+                "id integer primary key autoincrement," +
+                "trexid integer not null," +
                 "number integer not null," +
                 "value real not null," +
                 "count integer not null," +
-                "unitid integer not null," +
-                "primary key (trainingid, number)," +
-                "foreign key (trainingid) references training(id)," +
-                "foreign key (unitid) references unit(id))");
+                "unitid integer," +
+                "foreign key (unitid) references unit(id) on delete set null," +
+                "foreign key (trexid) references trainingexercise(id) on delete cascade)");
     }
 
     @Override
@@ -99,6 +99,33 @@ public class DBhelper extends SQLiteOpenHelper{
             db.execSQL("drop table daysexercises");
             onCreate(db);
         }
+        if (oldVersion<7){
+            db.execSQL("drop table day");
+            db.execSQL("drop table exercise");
+            db.execSQL("drop table type");
+            db.execSQL("drop table settable");
+            db.execSQL("drop table daysexercises");
+            onCreate(db);
+        }
+        if (oldVersion<9){
+            db.execSQL("drop table trainingexercise");
+            db.execSQL("drop table training");
+            db.execSQL("drop table meta");
+            db.execSQL("drop table exercise");
+            db.execSQL("drop table settable");
+            db.execSQL("drop table unit");
+            onCreate(db);
+        }
+        if (oldVersion<10){
+            db.execSQL("drop table meta");
+            db.execSQL("create table meta (" +
+                    "id integer primary key autoincrement, " +
+                    "name text not null," +
+                    "trainingid integer not null," +
+                    "value text not null," +
+                    "isnumeric integer not null default 0," +
+                    "foreign key (trainingid) references training(id) on delete cascade)");
+        }
         Log.d(SELFTAG, "Current DB version is "+newVersion);
     }
 
@@ -117,8 +144,5 @@ public class DBhelper extends SQLiteOpenHelper{
             }
         }
         else Log.d(SELFTAG+"."+SQLTAG, "Cursor is null");
-    }
-    private void logNewVersion(int newVersion){
-        Log.d(SELFTAG+"."+SQLTAG,"Successfully upgraded to version "+newVersion);
     }
 }

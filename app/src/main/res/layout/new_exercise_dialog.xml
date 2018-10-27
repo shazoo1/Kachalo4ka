@@ -13,7 +13,7 @@
     <AutoCompleteTextView
         android:layout_marginStart="@dimen/popupInputMargin"
         android:layout_marginEnd="@dimen/popupInputMargin"
-        android:id="@+id/etName"
+        android:id="@+id/acExerciseName"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         />

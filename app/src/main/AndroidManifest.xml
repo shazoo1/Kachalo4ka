@@ -17,14 +17,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.NewDayActivity"
+            android:name=".activities.NewTrainingActivity"
             android:label="@string/title_activity_new_day"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.DayActivity"
+            android:name=".activities.TrainingActivity"
             android:label="@string/title_activity_day"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.SetsActivity" />
+        <activity android:name=".activities.ExerciseActivity" />
         <activity android:name=".activities.NewSetActivity"></activity>
     </application>
 

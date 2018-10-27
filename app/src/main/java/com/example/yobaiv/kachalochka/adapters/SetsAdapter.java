@@ -1,7 +1,6 @@
 package com.example.yobaiv.kachalochka.adapters;
 
 import android.content.Context;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,7 @@ import android.widget.TextView;
 
 import com.example.yobaiv.kachalochka.R;
 import com.example.yobaiv.kachalochka.classes.Set;
-
-import org.w3c.dom.Text;
+import com.example.yobaiv.kachalochka.classes.helpers.DBHandler;
 
 import java.util.ArrayList;
 
@@ -23,9 +21,11 @@ public class SetsAdapter extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
     ArrayList<Set> objects = new ArrayList<>();
+    DBHandler handler;
 
     public SetsAdapter(Context context, ArrayList<Set> sets){
         this.context = context;
+        handler = new DBHandler(context);
         objects = sets;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -41,7 +41,7 @@ public class SetsAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return objects.get(position).getId();
     }
 
     @Override
@@ -53,7 +53,8 @@ public class SetsAdapter extends BaseAdapter {
         Set set = (Set)getItem(position);
 
         String title = "Подход " + set.getNumber();
-        String subtitle = set.getWeight() + " кг - " + set.getCount() + " повторений";
+        String subtitle = set.getValue() + handler.getUnitById(set.getUnitId()).getName()+" - "
+                + set.getCount() + " повторений";
 
         ((TextView) view.findViewById(R.id.tvTitle)).setText(title);
         ((TextView) view.findViewById(R.id.tvSubtitle)).setText(subtitle);

@@ -1,24 +1,26 @@
 package com.example.yobaiv.kachalochka.activities;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.yobaiv.kachalochka.adapters.TrainingListAdapter;
+import com.example.yobaiv.kachalochka.classes.Training;
+import com.example.yobaiv.kachalochka.classes.helpers.DBHandler;
 import com.example.yobaiv.kachalochka.constants.ACode;
 import com.example.yobaiv.kachalochka.R;
-import com.example.yobaiv.kachalochka.adapters.DayAdapter;
-import com.example.yobaiv.kachalochka.classes.Day;
-import com.example.yobaiv.kachalochka.classes.DBhelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int REFRESH_PARENT = 333;
     public static final ACode ACODE = new ACode();
 
+
     private final String MAINTAG = "MAIN";
-    ArrayList<Day> days = new ArrayList<>();
-    DayAdapter dayAdapter;
+    List<Training> trainings = new ArrayList<>();
+    TrainingListAdapter trainingListAdapter;
     FloatingActionButton fabAdd;
+    private final DBHandler handler = new DBHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,133 +42,118 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_menu);
 
-        viewDaysExercises();
+        //viewDaysExercises();
 
         Toolbar toolbar = (Toolbar)(findViewById(R.id.toolbar));
         setSupportActionBar(toolbar);
 
-        dayAdapter = new DayAdapter(this, days);
+        trainings = handler.getTrainingsFromDatabase();
+        Log.d(MAINTAG, "List trainings consists of " + trainings.size() + " elements.");
+        trainingListAdapter = new TrainingListAdapter(this, trainings);
 
-        getDays();
-        ListView lvDays = (ListView) findViewById(R.id.lvMain);
-        lvDays.setAdapter(dayAdapter);
+        ListView lvTrainings = (ListView) findViewById(R.id.lvMain);
+        lvTrainings.setAdapter(trainingListAdapter);
+        trainingListAdapter.notifyDataSetChanged();
 
         fabAdd = (FloatingActionButton) findViewById(R.id.fabAdd);
         fabAdd.bringToFront();
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewDay();
+                addNewTraining();
+                trainingListAdapter.notifyDataSetChanged();
             }
         });
 
-        lvDays.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        lvTrainings.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View  view, int pos, long id){
-                viewDay((Day) parent.getAdapter().getItem(pos));
+                viewTraining(parent.getAdapter().getItemId(pos));
             }
         });
+        registerForContextMenu(lvTrainings);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view,
+                                    ContextMenu.ContextMenuInfo menuInfo){
+        switch (view.getId()){
+            case R.id.lvMain : {
+                menu.add(0, R.integer.context_menu_view, 0, R.string.list_context_menu_view);
+                menu.add(0, R.integer.context_menu_add, 0, R.string.list_context_menu_add);
+                menu.add(0, R.integer.context_menu_edit, 0, R.string.list_context_menu_edit);
+                menu.add(0, R.integer.context_menu_remove, 0, R.string.list_context_menu_remove);
+                menu.add(0, R.integer.context_menu_about, 0, R.string.list_context_menu_remove);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()){
+            case R.integer.context_menu_add: {
+                addNewTraining();
+                break;
+            }
+            case R.integer.context_menu_view: {
+                viewTraining(info.id);
+                break;
+            }
+            case R.integer.context_menu_remove: {
+                if(handler.removeTraining(info.id)){
+                    Toast t = Toast.makeText(this, R.string.main_training_removed, Toast.LENGTH_SHORT);
+                    t.show();
+                }
+                refreshTrainingsList();
+                break;
+            }
+            case R.integer.context_menu_edit: {
+                edirTraining(info.id);
+                refreshTrainingsList();
+                break;
+            }
+        }
+        return super.onContextItemSelected(item);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        Log.d(MAINTAG, "NewDayActivity - OK");
+        Log.d(MAINTAG, "NewTrainingActivity - OK");
         if (resultCode == RESULT_OK){
-            getDays();
+            refreshTrainingsList();
         }
-        dayAdapter.notifyDataSetChanged();
     }
 
-    private void addNewDay(){
-        Intent intent = new Intent(this, NewDayActivity.class);
-        intent.putExtra("daynumber", days.size() + 1);
-        startActivityForResult(intent, ACode.NEW_DAY);
+    private void addNewTraining(){
+        Intent intent = new Intent(this, NewTrainingActivity.class);
+        intent.putExtra("trainingnumber", trainings.size() + 1);
+        intent.putExtra("requestCode", ACode.NEW_TRAINING);
+        startActivityForResult(intent, ACode.NEW_TRAINING);
     }
 
-    private void viewDay(Day day){
-        if (day == null) Log.d(MAINTAG, "viewDay: list_item is null.");
-
-        Intent intent = new Intent(this, DayActivity.class);
-        intent.putExtra("list_item", day.getId());
-        intent.putExtra("title", day.getTitle());
-        Log.d(MAINTAG, "viewDay started with day " + day.getId());
-        startActivityForResult(intent, ACode.DAY);
+    private void edirTraining(long id){
+        Intent intent = new Intent(this, NewTrainingActivity.class);
+        intent.putExtra("trainingid", id);
+        intent.putExtra("requestCode", ACode.EDIT_TRAINING);
+        startActivityForResult(intent, ACode.EDIT_TRAINING);
     }
 
-    private void getDays(){
-
-        days.clear();
-
-        DBhelper dbhelper = new DBhelper(this);
-        SQLiteDatabase db = dbhelper.getReadableDatabase();
-        String[] dayscolumns = {"id", "titles", "typeid"};
-        String[] typescolumns = {"id","name"};
-        Cursor c = db.query("days", null, null, null, null, null, null);
-
-        Log.d(MAINTAG + "." + SQLTAG, "----Table Days----");
-        dbhelper.logCursor(c);
-        c.close();
-        Log.d(MAINTAG + "." + SQLTAG, "---- ----");
-
-        c = db.query("types", null, null, null, null, null, null);
-        Log.d(MAINTAG + "." + SQLTAG, "----Table Types----");
-        dbhelper.logCursor(c);
-        c.close();
-        Log.d(MAINTAG + "." + SQLTAG, "---- ----");
-
-        Log.d(MAINTAG + "." + SQLTAG, "---- INNER JOIN with rawQuery ----");
-        String table = "days as days inner join types as types on days.typeid = types.id";
-        String [] columns = {"days.id as id", "days.title as title", "types.name as type", "days.date as date"};
-        c = db.query(table, columns, null, null, null, null, "date");
-        dbhelper.logCursor(c);
-        Log.d(MAINTAG + "." + SQLTAG, "---- ----");
-
-        if (c.moveToFirst()){
-            do{
-                int id = -1;
-                String title = "";
-                String type = "";
-                String str = "";
-                long date = 0;
-                for (String colname : c.getColumnNames()){
-                    switch (colname){
-                        case "id" : id = c.getInt(c.getColumnIndex(colname));
-                        case "title" : title = c.getString(c.getColumnIndex(colname));
-                        case "type" : type = c.getString(c.getColumnIndex(colname));
-                        case "date" : date = c.getLong(c.getColumnIndex(colname));
-                    }
-                }
-                days.add(new Day(id, title, type, date));
-                Log.d(MAINTAG+"."+SQLTAG, "Added list_item "+ id + " of type " + type);
-            }
-            while(c.moveToNext());
+    private void viewTraining(long trainingId){
+        if (trainingId < 0){
+            Log.e(MAINTAG, "Wrong training id");
+            return;
         }
-        Log.d(MAINTAG, "Days are loaded. ArrayList days consists of "+ days.size() +" elements.");
-        dayAdapter.notifyDataSetChanged();
-        db.close();
+        Intent intent = new Intent(this, TrainingActivity.class);
+        intent.putExtra("trainingid", trainingId);
+        Log.d(MAINTAG, "viewTraining started with training " + trainingId);
+        startActivityForResult(intent, ACode.TRAINING);
     }
 
-    private void clearTables(){
-        DBhelper dbhelper = new DBhelper(this);
-        SQLiteDatabase db = dbhelper.getWritableDatabase();
 
-        db.execSQL("delete from days");
-        db.execSQL("delete from types");
-        db.execSQL("delete from exercises");
-        db.execSQL("delete from sets");
-        db.execSQL("delete from daysexercises");
-        db.execSQL("delete from sets");
-        db.close();
-    }
-
-    private void viewDaysExercises(){
-        DBhelper helper = new DBhelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        String[] cols = {"dayid", "exid"};
-        Log.d(SQLTAG, "---- Table daysexercises ----");
-        Cursor c = db.query("daysexercises", cols, null, null, null, null, null);
-        Log.d(SQLTAG, "---- ----");
-        helper.logCursor(c);
-        db.close();
+    private void refreshTrainingsList(){
+        trainings.clear();
+        trainings.addAll(handler.getTrainingsFromDatabase());
+        trainingListAdapter.notifyDataSetChanged();
     }
 }

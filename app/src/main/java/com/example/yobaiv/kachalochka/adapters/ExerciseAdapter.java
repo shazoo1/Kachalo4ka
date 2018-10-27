@@ -10,8 +10,14 @@ import android.widget.TextView;
 
 import com.example.yobaiv.kachalochka.R;
 import com.example.yobaiv.kachalochka.classes.Exercise;
+import com.example.yobaiv.kachalochka.classes.Set;
+import com.example.yobaiv.kachalochka.classes.Training;
+import com.example.yobaiv.kachalochka.classes.helpers.DBHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by YOBA IV on 25.10.2017.
@@ -23,26 +29,31 @@ public class ExerciseAdapter extends BaseAdapter {
 
     Context context;
     LayoutInflater inflater;
-    ArrayList<Exercise> objects;
+    List<Exercise> exercises = new ArrayList<>();
+    private DBHandler handler;
+    long trainingid;
 
-    public ExerciseAdapter(Context context, ArrayList<Exercise> exercises){
+    public ExerciseAdapter(Context context, List<Exercise> exerises, long trainingId){
         this.context = context;
-        objects = exercises;
+        handler = new DBHandler(context);
+        this.trainingid = trainingId;
+        this.exercises = exerises;
+
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
     public int getCount() {
-        return objects.size();
+        return exercises.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return objects.get(position);
+        return exercises.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return exercises.get(position).getId();
     }
 
     @Override
@@ -52,14 +63,13 @@ public class ExerciseAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.list_item, parent, false);
         }
         Log.d(SELFTAG, "Trying to prepare exercises list.");
-        Exercise ex = getEx(position);
+        Exercise ex = (Exercise)getItem(position);
 
+        Log.d(SELFTAG, ex.getId() + " " + ex.getName());
         ((TextView) view.findViewById(R.id.tvTitle)).setText(ex.getName());
-        ((TextView) view.findViewById(R.id.tvSubtitle)).setText(ex.getSetsCount()+" подходов");
+        ((TextView) view.findViewById(R.id.tvSubtitle)).setText((handler.getSetsFromDatabase(trainingid, ex.getId())).size()
+                +" подходов");
 
         return view;
-    }
-    private Exercise getEx(int pos){
-        return ((Exercise) objects.get(pos));
     }
 }

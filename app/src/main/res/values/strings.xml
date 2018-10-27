@@ -4,4 +4,21 @@
     <string name="title_activity_day">День</string>
     <string name="toolbar_back">Назад</string>
     <string name="toolbar_title">Качалочка</string>
+    <string name="unable_to_add">Невозможно добавить.</string>
+    <string name="list_context_menu_add">Добавить</string>
+    <string name="list_context_menu_edit">Изменить</string>
+    <string name="list_context_menu_remove">Удалить</string>
+    <string name="list_context_menu_view">Открыть</string>
+    <string name="main_training_removed">Тренировка удалена.</string>
+    <string name="exercise_set_removed">Подход удалён.</string>
+    <string name="new_set_weight_etc">Вес, расстояние и т.п.</string>
+    <string name="new_set_repeats">Количество повторений</string>
+    <string name="new_set_unit">Единица измерений (кг, км и т.п.)</string>
+    <string name="new_set_title">Новый подход</string>
+    <string name="new_set_error_weight_empty">Введите вес/расстояние</string>
+    <string name="new_set_error_count_empty">Введите количество повторений</string>
+    <string name="new_set_error_unit_empty">Выберите единицу измерения</string>
+    <string name="edit_exercise_success">Упражнение изменено.</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Отмена</string>
 </resources>
